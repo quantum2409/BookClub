@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog Page</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+
+<div class="search-panel">
+    <div class="input-group">
+        <input type="text" id="query" placeholder="Search...">
+        <div class="dropdown">
+
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                <span id="search_concept">Filter by</span> <span class="caret"></span>
+            </button>
+
+
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#Title">Title</a></li>
+                <li><a href="#Author">Author</a></li>
+                <li><a href="#Genre">Genre</a></li>
+            </ul>
+            
+        </div>
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="search-btn">Search</button>
+        </span>
+    </div>
+</div>
+
+
+<div id="quote"></div>
+
+<div id="wait"></div>
+
+<table id="catalogue"></table>
+
+</body>
+</html>
