@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fancy Pagination for HTML Table</title>
+  <style>
+    #pagination-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      margin-top: 10px;
+    }
+
+    .page {
+      padding: 8px 12px;
+      margin-right: 5px;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .page:hover {
+      background-color: #f2f2f2;
+    }
+
+    .arrow {
+      padding: 8px 12px;
+      margin-right: 5px;
+      text-decoration: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      color: #333;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .arrow:hover {
+      background-color: #f2f2f2;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    img {
+      max-width: 100px;
+      max-height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+<table id="content">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Genre</th>
+      <th>Description</th>
+      <th>Rating</th>
+      <th>Image</th>
+    </tr>
+  </thead>
+  <tbody id="item-list"></tbody>
+</table>
+
+<div id="pagination">
+  <ul id="pagination-list"></ul>
+</div>
+
+<script>
+  const content = document.getElementById('content');
+  const itemList = document.getElementById('item-list');
+  const paginationList = document.getElementById('pagination-list');
+  const itemsPerPage = 8;
+  const visiblePages = 10;
+  let currentPage = 1;
+
+  function fetchData() {
+    return fetch('data.json')
+      .then(response => response.json())
+      .catch(error => console.error('Error fetching data:', error));
+  }
+
+  function showPage(page, data) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const items = data.slice(start, end);
+
+    itemList.innerHTML = items.map(item => {
+      const fields = item.fields;
+      return `
+        <tr>
+          <td>${fields.Title}</td>
+          <td>${fields.Author}</td>
+          <td>${fields.Genre}</td>
+          <td>${fields.description}</td>
+          <td>${fields.rating}</td>
+          <td><img src="${fields.image}" alt="${fields.Title}"></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function updatePagination(data) {
+    const totalItems = data.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const pages = [];
+
+    let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+    if (endPage - startPage + 1 < visiblePages) {
+      startPage = Math.max(1, endPage - visiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      pages.push(`<a href="#" class="arrow" data-page="${startPage - 1}">&laquo; Prev</a>`);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(`<a href="#" class="page ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>`);
+    }
+
+    if (endPage < totalPages) {
+      pages.push(`<a href="#" class="arrow" data-page="${endPage + 1}">Next &raquo;</a>`);
+    }
+
+    paginationList.innerHTML = pages.join('');
+
+    const pageElements = paginationList.querySelectorAll('.page, .arrow');
+    pageElements.forEach(pageElement => {
+      pageElement.addEventListener('click', (event) => {
+        event.preventDefault();
+        const selectedPage = parseInt(pageElement.getAttribute('data-page'), 10);
+        currentPage = selectedPage;
+        showPage(currentPage, data);
+        updatePagination(data);
+      });
+    });
+  }
+
+  fetchData()
+    .then(data => {
+      showPage(currentPage, data);
+      updatePagination(data);
+    });
+</script>
+
+</body>
+</html>
